@@ -1,0 +1,10 @@
+.env
+
+venv/
+venv
+
+migrations
+migrations/
+
+__pycache__
+__pycache__/
