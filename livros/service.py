@@ -6,18 +6,19 @@ errors = "Errors"
 
 class LivroService:
 
-    @staticmethod
-    def get_livro_user(user):
-        livros = Livro.objects.filter(dono=user)
+    def __init__(self, user):
+        self.user = user
+
+    def get_all_book_user(self):
+        livros = Livro.objects.filter(dono=self.user)
         serializer = LivroSerializer(livros, many=True)
         return serializer.data, None
     
-    @staticmethod
-    def cadastrar_livro(data, user):
+    def create_book(self, data):
         try:
             serializer = LivroSerializer(data=data)
             if serializer.is_valid():
-                serializer.save(dono=user)
+                serializer.save(dono=self.user)
                 return serializer.data, None
             return None, serializer.errors
         except Livro.DoesNotExist:
@@ -26,19 +27,17 @@ class LivroService:
         """
         LivroDetail
         """
-    @staticmethod
-    def get_all_livro_user(pk, user):
+    def get_all_book_user_pk(self, pk):
         try:
-            livros = Livro.objects.get(pk=pk, dono=user)
+            livros = Livro.objects.get(pk=pk, dono=self.user)
             serializer = LivroSerializer(livros)
             return serializer.data, None
         except Livro.DoesNotExist:
             return None, {errors:msg_error_status}
         
-    @staticmethod
-    def update_livro(pk, data, user, partial=False):
+    def update_livro(self, pk, data, partial=False):
         try:
-            livro = Livro.objects.get(pk=pk, dono=user)
+            livro = Livro.objects.get(pk=pk, dono=self.user)
         except Livro.DoesNotExist:
             return None, {errors:msg_error_status}
         serializer = LivroSerializer(instance=livro, data=data, partial=partial)
@@ -47,10 +46,9 @@ class LivroService:
             return serializer.data, None
         return None, serializer.errors
     
-    @staticmethod
-    def deletar_livro(pk, user):
+    def delete_book(self, pk):
         try:
-            livro=Livro.objects.get(pk=pk, dono=user)
+            livro=Livro.objects.get(pk=pk, dono=self.user)
             livro.delete()
             return True, None
         except Livro.DoesNotExist:
