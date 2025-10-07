@@ -4,11 +4,11 @@ from django.conf import settings
 
 class Livro(models.Model):
 
-    dono = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='livro')
+    dono = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='livros')
 
     titulo = models.CharField(max_length=150)
     autor = models.CharField(max_length=150)
-    genero = models.CharField(blank=True, null=True)
+    genero = models.CharField(max_length=50, blank=True, null=True)
     dt_publicacao = models.DateField(auto_now_add=True)
 
     def __str__(self):
