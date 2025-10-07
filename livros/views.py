@@ -15,14 +15,16 @@ class LivroListCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        livro, error = LivroService.get_livro_user(request.user)
+        service = LivroService(user=request.user)
+        livro, error = service.get_all_book_user()
         if error:
             status_error = get_status_error(error)
             return Response(error, status=status_error)
         return Response(livro, status=status.HTTP_200_OK)
     
     def post(self, request):
-        livro, error= LivroService.cadastrar_livro(request.data, request.user)
+        service = LivroService(user=request.user)
+        livro, error= service.create_book(request.data)
         if error:
             status_error = get_status_error(error)
             return Response(error, status=status_error)
@@ -34,32 +36,33 @@ class LivroDetail(APIView):
     permission_classes = [IsAuthenticated]
     
     def get(self, request, pk):
-        livro, error = LivroService.get_all_livro_user(pk, request.user)
+        service = LivroService(user=request.user)
+        livro, error = service.get_all_book_user_pk(pk)
         if error:
             status_error = get_status_error(error)
             return Response(error, status=status_error)
         return Response(livro, status=status.HTTP_200_OK)
     
     def put(self, request, pk):
-        livro, error = LivroService.update_livro(pk, request.data, request.user)
+        service = LivroService(user=request.user)
+        livro, error = service.update_livro(pk, request.data)
         if error:
             status_error = get_status_error(error)
             return Response(error, status=status_error)
         return Response(livro, status=status.HTTP_200_OK)
     
     def patch(self, request, pk):
-        livro, error = LivroService.update_livro(pk, request.data, request.user, partial=True)
+        service = LivroService(user=request.user)
+        livro, error = service.update_livro(pk, request.data, partial=True)
         if error:
             status_error = get_status_error(error)
             return Response(error, status=status_error)
         return Response(livro, status=status.HTTP_200_OK)
     
     def delete(self, request, pk):
-        livro, error = LivroService.deletar_livro(pk, request.user)
+        service = LivroService(user=request.user)
+        livro, error = service.delete_book(pk)
         if error:
             status_error = get_status_error(error)
             return Response(error, status=status_error)
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-def homepage_view(request):
-    return render(request, 'livros/index.html')
