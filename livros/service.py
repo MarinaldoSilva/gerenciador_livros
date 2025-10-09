@@ -1,20 +1,24 @@
 from .models import Livro
 from .serializer import LivroSerializer
+from .services.base_service import BaseLivroService
+from typing import Any
+from .services.types import (
+    generic_service_response, delete_service_response,
+    serializers_data, service_failured_response,
+    errors_dict, service_success_response
+    )
 
 msg_error_status = "ID não localizado ou usuário sem permissão de acesso."
 errors = "Errors"
 
-class LivroService:
+class LivroService(BaseLivroService):
 
-    def __init__(self, user):
-        self.user = user
-
-    def get_all_book_user(self):
+    def get_all_livro(self)-> generic_service_response:
         livros = Livro.objects.filter(dono=self.user)
         serializer = LivroSerializer(livros, many=True)
         return serializer.data, None
     
-    def create_book(self, data):
+    def create_livro(self, data:dict[str, Any])-> generic_service_response:
         try:
             serializer = LivroSerializer(data=data)
             if serializer.is_valid():
@@ -27,7 +31,7 @@ class LivroService:
         """
         LivroDetail
         """
-    def get_all_book_user_pk(self, pk):
+    def get_all_livro_pk(self, pk:int) -> generic_service_response:
         try:
             livros = Livro.objects.get(pk=pk, dono=self.user)
             serializer = LivroSerializer(livros)
@@ -35,7 +39,7 @@ class LivroService:
         except Livro.DoesNotExist:
             return None, {errors:msg_error_status}
         
-    def update_livro(self, pk, data, partial=False):
+    def update_livro(self, pk:int, data:dict[str, Any], partial=False) -> generic_service_response:
         try:
             livro = Livro.objects.get(pk=pk, dono=self.user)
         except Livro.DoesNotExist:
@@ -46,7 +50,7 @@ class LivroService:
             return serializer.data, None
         return None, serializer.errors
     
-    def delete_book(self, pk):
+    def delete_livro(self, pk:int)-> delete_service_response:
         try:
             livro=Livro.objects.get(pk=pk, dono=self.user)
             livro.delete()
