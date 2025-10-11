@@ -11,7 +11,6 @@ Optional = funciona como um atalho de Union, se passar somente um parametro o 2�
 ex.: Optional[list] == Union[List, None]
 """
 
-
 serializers_data = Union[ReturnDict, ReturnList, Dict[str, Any]]
 """
 1º pode ser retornado uma lista de dicionarios, podemos ter vários itens serializados
@@ -33,8 +32,6 @@ service_failured_response = Tuple[None, errors_dict]
 generic_service_response = Union[service_success_response, service_failured_response]
 
 delete_service_response = Union[Tuple[bool,None], Tuple[bool, errors_dict]]
-
-
 
 """
 os metodos do service tem duas repostas possivies serializer.dato, None ou None, serializer.errors

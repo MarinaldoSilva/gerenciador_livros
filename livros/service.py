@@ -2,11 +2,8 @@ from .models import Livro
 from .serializer import LivroSerializer
 from .services.base_service import BaseLivroService
 from typing import Any
-from .services.types import (
-    generic_service_response, delete_service_response,
-    serializers_data, service_failured_response,
-    errors_dict, service_success_response
-    )
+from .services.types import generic_service_response, delete_service_response
+    
 
 msg_error_status = "ID não localizado ou usuário sem permissão de acesso."
 errors = "Errors"
@@ -18,7 +15,7 @@ class LivroService(BaseLivroService):
         serializer = LivroSerializer(livros, many=True)
         return serializer.data, None
     
-    def create_livro(self, data:dict[str, Any])-> generic_service_response:
+    def create_livro(self, data:dict[str, Any]):
         try:
             serializer = LivroSerializer(data=data)
             if serializer.is_valid():
@@ -27,11 +24,8 @@ class LivroService(BaseLivroService):
             return None, serializer.errors
         except Livro.DoesNotExist:
             return None, {errors : msg_error_status}
-        
-        """
-        LivroDetail
-        """
-    def get_all_livro_pk(self, pk:int) -> generic_service_response:
+ 
+    def get_all_livro_pk(self, pk:int):
         try:
             livros = Livro.objects.get(pk=pk, dono=self.user)
             serializer = LivroSerializer(livros)
@@ -39,7 +33,7 @@ class LivroService(BaseLivroService):
         except Livro.DoesNotExist:
             return None, {errors:msg_error_status}
         
-    def update_livro(self, pk:int, data:dict[str, Any], partial=False) -> generic_service_response:
+    def update_livro(self, pk:int, data:dict[str, Any], partial=False):
         try:
             livro = Livro.objects.get(pk=pk, dono=self.user)
         except Livro.DoesNotExist:
@@ -50,7 +44,7 @@ class LivroService(BaseLivroService):
             return serializer.data, None
         return None, serializer.errors
     
-    def delete_livro(self, pk:int)-> delete_service_response:
+    def delete_livro(self, pk:int):
         try:
             livro=Livro.objects.get(pk=pk, dono=self.user)
             livro.delete()
