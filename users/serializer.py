@@ -32,41 +32,10 @@ class UserSerializer(serializers.ModelSerializer):
             }
         }
 
-        """
-        quando uma metodo começa com 'validate_' e o nome de um campo especifico, o DRF invoca o validated para validar o campo especifico
-        """
-    def validate_email(self, value) -> Any:
-        """
-        se a operação for de criação ou atualização de um obj já existente o instance(o mesmo que passamos no metodo PATCH/PUT) é acionado, o self.instance vai conter a instancia do User que o invoca.
-        caso seja para criar um do zero, o `self.instance` sera 'None'
-        """
-        if self.instance:
-                """
-                Entendendo o -> exclude(pk=self.instance.pk) quando vamos atualizar o email de um user, o próprio emaail dele é passado (email antigo), e com isso o sistema cairia no erro: 'Esse email já esta cadastrado.' mesmo sendo o email de quem enviou a requisição.
-                quando excluimos com pk=self... estamos garantindo que se o email 'value' for igaul ao atual ele não ira causar erro, pois o email passado já é do próprio usuário, caso seja de outro user, o erro será disparado.
-                filter(email=value): após excluir o usuário de quem requisitou, filtramos o resto dos email para verificar se já existe algum email assim cadastrado esse email, o email é um campo único, então se o usuário atualizar seu eamil com um email já cadastrado na base ira ocorrer um error.
-                """
-                if User.objects.exclude(pk=self.instance.pk).filter(email=value).exists():
-                     raise serializers.ValidationError("Esse email já esta cadastrado.")
-                else:
-                    """
-                    caso seja uma criação de usuário, o self.instance é None, e é verificado se o email já existe na base, o exclude não é necessário, pois não estamos com o usuário atual, estamos com um novo usuário e assim verificamos se o email já tem cadastro na base, o exists() retorna true ou false
-                    """
-                    if User.objects.filter(email=value).exists():
-                        raise serializers.ValidationError("Esse email já esta cadastrado.") 
-                return value #valor que foi envaido na requisição, pois as outras duas validações foram False
-                    
-    def validate_username(self, value) -> Any:
-        if self.instance:
-            if User.objects.exclude(pk=self.instance.pk).filter(username=value).exists():
-                 raise serializers.ValidationError("Username em uso.")
-            else:
-                if User.objects.filter(username=value).exists():
-                    raise serializers.ValidationError("Username em uso.")
-            return value
-    
     def create(self, validated_data:dict) -> User:
-       
+        print("---- DADOS VALIDADADOS QUE CHEGARAM NO CREATE ----")
+        print(validated_data)
+        print("---------------------------------------------")
         user = User.objects.create_user(
             username=validated_data['username'],
             password=validated_data['password'],
