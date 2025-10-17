@@ -15,9 +15,54 @@ Foi usada uma classe de serviço chamada ``service``, a view não tem o contato 
 
 # EndPoints
 
-* **Livros**
+* **User**
   
+  Endpoint de registro, em nosso user, temos 3 validações no ``extra_kwargs```onde tem regras no email, senha e username
+
+  ```python
+  extra_kwargs = {
+            'password':{
+                'write_only': True,
+                'min_length': 8
+            },
+            'email':{
+                'required':True,
+                'allow_blank': False
+            },
+            'username': {
+                'required': True,
+                'allow_blank': False,
+            }
+        }
+  ```
+  
+  ```bash
+  http://127.0.0.1:8000/api/v1/user/registrar/
+  ```
+
+  ```json
+  {
+    "username": "Joyce_Hilpert72",
+    "email": "Joyceh2000@gmail.com",
+    "first_name": "Joice",
+    "last_name": "Hilpert",
+    "password": "hilperte201" 
+  }
+  ```
+
+
+* **Livros**
+
 * **GET**
+
+endpoint:
+
+```json
+http://127.0.0.1:8000/api/v1/livros/1/
+```
+
+Se na nossa requisição for passado um PK/ID será retornado um item especifico, caso não seja, uma lista de elemtnos sera retornada.
+
 
 ```py
 class LivroReadAPIView(APIView):
@@ -43,6 +88,15 @@ class LivroReadAPIView(APIView):
 ```
 
 * **POST**
+Para cirar vários livros eu utilizei um random generate de dados ficticios para facilitar o processo de criação
+
+```json
+{
+	"titulo":"{% faker 'randomJobTitle' %}",
+	"autor": "{% faker 'randomFullName' %}",
+	"genero": "{% faker 'randomJobDescriptor' %}"
+}
+```
 
 ```py
 class LivroCreateAPIView(APIView):
@@ -95,6 +149,30 @@ class LivroDestroyAPIView(APIView):
 ```
 
 
+O projeto em si preza pela segurança dos dados, o banco de dados tem que ser configurado localmente na sua máquina, são informações que são sensiveis e mesmo a aplicação sendo para fins de estudo, vou seguir as práticas de segurança adotadas pelo mercado de trabalho e analistas.
 
+Criando ambiente virtual.
+
+```bash
+  python -m venv venv
+  .\venv\Scipts\activate
+```
+
+instale o arquivido de libs:
+
+```py
+pip install -r requirements.txt
+```
+Faça as migrações para o banco
+
+```py
+    python manage.py migrate
+```
+
+Teste o serviço rodando o servidor próprio do Django.
+
+```
+   python manage.py runserver
+```
 
 Clone o projeto, gere uma nova chave `secret_key`, conecte seu banco e teste a aplicação.
